@@ -80,6 +80,7 @@
 }
 
 .tests-header__link {
+  word-break: break-word;
   font-size: 1.75rem;
   font-weight: 600;
   color: inherit;
@@ -93,6 +94,7 @@
 .survey-header__desc,
 .tests-header__desc {
   color: var(--desc-color);
+  word-break: break-word;
 }
 
 .survey-header__desc:empty,
