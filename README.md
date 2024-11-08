@@ -1,18 +1,26 @@
 ## Test Forms
 
+## Setup
+
+1. Install PHP 8.0+
+2. Set MySQL creds to /api/config.php file
+3. Run server
+
 ## API
 
 **prefix: /api**
+
+**API doesn't have authorization!**
 
 ### Tests
 
 - GET /tests/index.php
 
-  Get list of all tests
+  Get list of all tests (sorting by likes)
 
 - GET /tests/index.php?id=$ID
 
-  Get info about test with given ID
+  Get info about test with given ID (sorting by likes)
 
 - POST /tests/index.php
 
