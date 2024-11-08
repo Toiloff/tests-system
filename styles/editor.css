@@ -72,11 +72,11 @@
 }
 
 .editor-utility__button-delete {
-  color: var(--error-color);
+  color: rgb(var(--error-color));
 }
 
 .editor-utility__button-delete:hover {
-  color: var(--error-color-hover);
+  color: rgb(var(--error-color-hover));
 }
 
 .editor-section {

@@ -6,10 +6,10 @@
   --primary-color: rgb(34, 142, 93);
   --primary-hover-color: rgb(0, 186, 120);
   --primary-disabled-color: rgba(34, 142, 93, 0.3);
-  --success-color: rgb(76, 175, 80);
-  --warning-color: rgb(221, 168, 11);
-  --error-color: rgb(150, 68, 72);
-  --error-color-hover: rgb(241, 56, 56);
+  --success-color: 76, 175, 80;
+  --warning-color: 221, 168, 11;
+  --error-color: 150, 68, 72;
+  --error-color-hover: 241, 56, 56;
   --text-color: rgb(247, 247, 255);
   --desc-color: rgba(255, 255, 255, 0.75);
   --link-color: rgba(190, 190, 194);
@@ -186,15 +186,15 @@ button:focus:not(:focus-visible) {
 }
 
 .toast_success {
-  background: var(--success-color);
+  background: rgb(var(--success-color));
 }
 
 .toast_error {
-  background: var(--error-color);
+  background: rgb(var(--error-color));
 }
 
 .toast_warning {
-  background: var(--warning-color);
+  background: rgb(var(--warning-color));
 }
 
 .toast:not(.toast_success, .toast_error, .toast_warning) .toast__utility:hover {
