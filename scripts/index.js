@@ -10,6 +10,7 @@ class SurveyPage {
     this.step = 1;
     this.receivedScore = 0;
     this.selectedAnswer = null;
+    this.allAnswers = [];
   }
 
   get questions() {
@@ -100,7 +101,11 @@ class SurveyPage {
 
   goNextQuestion() {
     this.receivedScore += this.selectedAnswer?.score ?? 0;
-    this.selectedAnswer = null;
+    if (this.selectedAnswer) {
+      this.allAnswers.push(this.selectedAnswer);
+      this.selectedAnswer = null;
+    }
+
     if (this.step >= this.questions.length) {
       this.showResult();
       return this;
@@ -156,6 +161,59 @@ class SurveyPage {
     return this;
   }
 
+  getScorePhraseByValue(score) {
+    if (score !== 11 && score % 10 === 1) {
+      return `${score} балл`;
+    }
+
+    if (![12, 13, 14].includes(score) && [2, 3, 4].includes(score % 10)) {
+      return `${score} балла`;
+    }
+
+    return `${score} баллов`;
+  }
+
+  createAnswerResults() {
+    return this.questions.map((question) => {
+      const resultEl = document.createElement("li");
+      resultEl.classList.add("survey-result");
+      const selectedAnswer = question.answers.find((answer) =>
+        this.allAnswers.find((a) => answer.id === a.id)
+      );
+      const questionHasRightAnswer = question.answers.some(
+        (answer) => answer.isRight
+      );
+
+      const resultQuestionTitleEl = document.createElement("p");
+      resultQuestionTitleEl.classList.add("survey-result__question");
+      resultQuestionTitleEl.textContent = question.title;
+
+      const resultAnswersEl = document.createElement("ul");
+      resultAnswersEl.classList.add("survey-result__answers");
+      resultAnswersEl.append(
+        ...question.answers.map((answer) => {
+          const answerResultEl = document.createElement("li");
+          answerResultEl.classList.add("survey-result__answer");
+          if (selectedAnswer.id === answer.id) {
+            const answerExtraClass = questionHasRightAnswer
+              ? `survey-result__answer-${
+                  answer.isRight ? "correct" : "incorrect"
+                }`
+              : "survey-result__answer-selected";
+            answerResultEl.classList.add(answerExtraClass);
+          }
+
+          answerResultEl.textContent = answer.title;
+          return answerResultEl;
+        })
+      );
+
+      resultEl.append(resultQuestionTitleEl, resultAnswersEl);
+
+      return resultEl;
+    });
+  }
+
   showResult() {
     this.createHeader();
     this.surveyBodyEl = document.createElement("div");
@@ -165,7 +223,9 @@ class SurveyPage {
 
     this.receivedScoreEl = document.createElement("span");
     this.receivedScoreEl.classList.add("survey-header__desc-received-score");
-    this.receivedScoreEl.textContent = `${this.receivedScore} баллов`;
+    this.receivedScoreEl.textContent = this.getScorePhraseByValue(
+      this.receivedScore
+    );
 
     this.totalScoreEl = document.createElement("span");
     this.totalScoreEl.classList.add("survey-header__desc-total-score");
@@ -173,21 +233,41 @@ class SurveyPage {
 
     this.goToMainPageEl = document.createElement("a");
     this.goToMainPageEl.href = "#";
-    this.goToMainPageEl.addEventListener("click", async () => {
-      await this.mainPage.init();
-    });
     this.goToMainPageEl.classList.add(
       "suver-header__button",
       "button",
       "button_primary"
     );
     this.goToMainPageEl.textContent = "На главную";
+    this.goToMainPageEl.addEventListener("click", async () => {
+      await this.mainPage.init();
+    });
     this.surveyHeaderDescEl.append(
       this.receivedScoreEl,
       " из ",
       this.totalScoreEl
     );
-    this.surveyHeaderEl.append(this.goToMainPageEl);
+
+    this.goMainPageDescEl = document.createElement("p");
+    this.goMainPageDescEl.classList.add("survey-body__desc");
+    this.goMainPageDescThanksEl = document.createElement("span");
+    this.goMainPageDescThanksEl.textContent = "Благодарим за прохождение!";
+    this.goMainPageDescEl.append(
+      this.goMainPageDescThanksEl,
+      "Вы можете найти еще больше интересных тестов на главной странице."
+    );
+
+    this.allAnswersResultEl = document.createElement("ul");
+    this.allAnswersResultEl.classList.add("survey-results");
+    if (this.test.totalScore) {
+      this.allAnswersResultEl.append(...this.createAnswerResults());
+    }
+
+    this.surveyBodyEl.append(
+      this.goMainPageDescEl,
+      this.allAnswersResultEl,
+      this.goToMainPageEl
+    );
 
     this.render();
   }
@@ -204,13 +284,40 @@ class TestsListPage {
     this.rootEl = rootEl;
     this.tests = [];
     this.likeIconString = `<svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0 0 48 48"><path fill="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M15 8C8.925 8 4 12.925 4 19c0 11 13 21 20 23.326C31 40 44 30 44 19c0-6.075-4.925-11-11-11c-3.72 0-7.01 1.847-9 4.674A10.99 10.99 0 0 0 15 8"/></svg>`;
-    this.dislikeIconString = `<svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0 0 48 48"><path fill="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="m24 31l-3-5l7-6l-9-5l1-5.8C18.5 8.432 16.8 8 15 8C8.925 8 4 12.925 4 19c0 11 13 21 20 23c7-2 20-12 20-23c0-6.075-4.925-11-11-11c-1.8 0-3.5.433-5 1.2"/></svg>`;
     this.editIconString = `<svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0 0 24 24"><path fill="currentColor" d="M5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h6.525q.5 0 .75.313t.25.687t-.262.688T11.5 5H5v14h14v-6.525q0-.5.313-.75t.687-.25t.688.25t.312.75V19q0 .825-.587 1.413T19 21zm4-7v-2.425q0-.4.15-.763t.425-.637l8.6-8.6q.3-.3.675-.45t.75-.15q.4 0 .763.15t.662.45L22.425 3q.275.3.425.663T23 4.4t-.137.738t-.438.662l-8.6 8.6q-.275.275-.637.438t-.763.162H10q-.425 0-.712-.288T9 14m12.025-9.6l-1.4-1.4zM11 13h1.4l5.8-5.8l-.7-.7l-.725-.7L11 11.575zm6.5-6.5l-.725-.7zl.7.7z"/></svg>`;
     this.deleteIconString = `<svg xmlns="http://www.w3.org/2000/svg" width="1rem" height="1rem" viewBox="0 0 24 24"><path fill="currentColor" d="M7 21q-.825 0-1.412-.587T5 19V6q-.425 0-.712-.288T4 5t.288-.712T5 4h4q0-.425.288-.712T10 3h4q.425 0 .713.288T15 4h4q.425 0 .713.288T20 5t-.288.713T19 6v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zm-7 11q.425 0 .713-.288T11 16V9q0-.425-.288-.712T10 8t-.712.288T9 9v7q0 .425.288.713T10 17m4 0q.425 0 .713-.288T15 16V9q0-.425-.288-.712T14 8t-.712.288T13 9v7q0 .425.288.713T14 17M7 6v13z"/></svg>`;
   }
 
   async fetchTests() {
     this.tests = await TestsAPI.getAll();
+    this.likedTests = this.getCacheTestLikes();
+  }
+
+  getCacheTestLikes() {
+    try {
+      return JSON.parse(localStorage.getItem("tests_likes")) ?? [];
+    } catch (err) {
+      console.error(`Failed to parse cached likes, because ${err.message}`);
+      return [];
+    }
+  }
+
+  updateCacheTestLike(testId, isLike) {
+    const currentLikes = this.getCacheTestLikes();
+    const selectedTest = currentLikes.find((test) => test.id === testId);
+    console.log(currentLikes, selectedTest, currentLikes[selectedTest]);
+    if (selectedTest) {
+      selectedTest.liked = isLike;
+    } else {
+      currentLikes.push({
+        id: testId,
+        liked: isLike,
+      });
+    }
+
+    localStorage.setItem("tests_likes", JSON.stringify(currentLikes));
+    this.likedTests = currentLikes;
+    return currentLikes;
   }
 
   async init() {
@@ -224,7 +331,7 @@ class TestsListPage {
     this.testsListEl.classList.add("tests");
     const testsMessageEl = document.createElement("p");
     testsMessageEl.classList.add("tests-message");
-    testsMessageEl.textContent = "Не найдено не одного теста";
+    testsMessageEl.textContent = "Не найдено ни одного теста";
     this.testsListEl.appendChild(testsMessageEl);
     return this;
   }
@@ -263,10 +370,13 @@ class TestsListPage {
       const testActionsEl = document.createElement("div");
       testActionsEl.classList.add("tests-header__actions");
 
+      const isLikedTest = this.likedTests.find((t) => t.id === test.id)?.liked;
       const testLikesEl = document.createElement("button");
       testLikesEl.classList.add(
         "tests-header__action",
-        "tests-header__action-like",
+        isLikedTest
+          ? "tests-header__action-dislike"
+          : "tests-header__action-like",
         "button"
       );
 
@@ -287,12 +397,11 @@ class TestsListPage {
         testLikesCounterEl.textContent = test.likes = isLike
           ? test.likes + 1
           : test.likes - 1;
-        testLikesIconEl.innerHTML = isLike
-          ? this.dislikeIconString
-          : this.likeIconString;
+        testLikesIconEl.innerHTML = this.likeIconString;
         isLike
           ? await TestsAPI.setLike(test.id)
           : await TestsAPI.removeLike(test.id);
+        this.updateCacheTestLike(test.id, isLike);
       };
 
       testLikesEl.changeLikeState = changeLikeStateHandle;
