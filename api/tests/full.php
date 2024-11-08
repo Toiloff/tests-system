@@ -14,7 +14,7 @@ class TestsFullRouteController extends RouteController
         }
 
         $conn = openConnection();
-        $stmt = mysqli_prepare($conn, "SELECT * FROM `tests` WHERE `id` = ?");
+        $stmt = mysqli_prepare($conn, "SELECT * FROM `tests` WHERE `id` = ? ORDER BY `likes` DESC");
         mysqli_stmt_bind_param($stmt, "d", $id);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);

@@ -19,7 +19,7 @@ class TestsRouteController extends RouteController
     function getAll()
     {
         $conn = openConnection();
-        $result = mysqli_query($conn, "SELECT * FROM `tests`");
+        $result = mysqli_query($conn, "SELECT * FROM `tests` ORDER BY `likes` DESC");
         $data = mysqli_fetch_all($result, MYSQLI_ASSOC);
         mysqli_close($conn);
 
@@ -33,7 +33,7 @@ class TestsRouteController extends RouteController
         }
 
         $conn = openConnection();
-        $stmt = mysqli_prepare($conn, "SELECT * FROM `tests` WHERE `id` = ?");
+        $stmt = mysqli_prepare($conn, "SELECT * FROM `tests` WHERE `id` = ? ORDER BY `likes` DESC");
         mysqli_stmt_bind_param($stmt, "d", $id);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
