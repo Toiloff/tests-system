@@ -1,5 +1,7 @@
 ## Test Forms
 
+![website screenshot](docs/screenshot.png)
+
 ## Setup
 
 1. Install PHP 8.0+
