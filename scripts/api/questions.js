@@ -1,4 +1,4 @@
-import BaseAPI from "./base.JS";
+import BaseAPI from "./base.js";
 
 export default new (class QuestionsAPI extends BaseAPI {
   constructor() {
