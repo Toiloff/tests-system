@@ -108,7 +108,7 @@ button:focus:not(:focus-visible) {
 .container {
   display: flex;
   flex-direction: column;
-  margin: 0 1.5rem;
+  margin: 0 0.5rem;
   gap: 0.5rem;
 }
 

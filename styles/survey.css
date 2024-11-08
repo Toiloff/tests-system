@@ -9,7 +9,7 @@
 .tests-container {
   display: flex;
   flex-direction: column;
-  margin: 2rem;
+  margin: 2rem 0;
   gap: 1rem;
 }
 
